@@ -1,3 +1,4 @@
 {
-    "github24" : "https://github.com/SimplifyJobs/Summer2024-Internships"
+    "GITHUB_24" : "https://github.com/SimplifyJobs/Summer2024-Internships",
+    "BOT_INVITE" : "https://discord.com/api/oauth2/authorize?client_id=1171147071026372740&permissions=551903422464&scope=applications.commands%20bot"
 }

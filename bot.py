@@ -22,9 +22,9 @@ class pre_bot(discord.Client):
 bot = pre_bot()
 tree = app_commands.CommandTree(bot)
 
-@tree.command(name="dailysearch", description="Search for new internship postings in the past 24 hours", guild=discord.Object(id=TEST_SERVER)) 
+@tree.command(name="dailysearch", description="Search for new internship postings in the past 24 hours", guild=discord.Object(id=TEST_SERVER)) # Change to support all servers
 async def self(interaction: discord.Interaction):   
-    page_data = requests.get(links["github24"])
+    page_data = requests.get(links["GITHUB_24"])
     
     await interaction.response.defer()
     await asyncio.sleep(10) # ? Needs adjusting
@@ -43,10 +43,15 @@ async def self(interaction: discord.Interaction):
 # async def self(interaction: discord.Interaction):
 #     return
 
+@tree.command(name="invite", description="Invite the bot to your server!", guild=discord.Object(id=TEST_SERVER)) 
+async def self(interaction: discord.Interaction):
+    await interaction.response.send_message(links['BOT_INVITE'])
+
 @tree.command(name="help", description="Shows commands for the bot", guild=discord.Object(id=TEST_SERVER)) 
 async def self(interaction: discord.Interaction):
     embed = discord.Embed(title="Commands", description="All bot commands", color=discord.Colour.gold())
     embed.add_field(name=f"/dailysearch", value=f"Shows today's internship postings according to Pitts GitHub repo")
+    embed.add_field(name=f"/invite", value=f"Sends invite link for the bot")
     await interaction.response.send_message(embed=embed, ephemeral=True)
 
 if __name__ == '__main__':
