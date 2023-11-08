@@ -50,7 +50,8 @@ async def self(interaction: discord.Interaction, style: discord.app_commands.Cho
             embed = discord.Embed(title=f'Daily Internships', description=f"Tech internships for the day", color=discord.Colour.green())
             for listing in response:
                 embed.add_field(name=f"{listing[0]}", value=f"{listing[2]}", inline=False)
-                
+            
+            #TODO: Implement pagination for embed
             await interaction.channel.send(embed=embed)
             
                 

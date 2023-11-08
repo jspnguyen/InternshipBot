@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 from datetime import datetime
-import requests, pytz
+import requests, pytz, re
 
 pst = pytz.timezone('America/Los_Angeles')
 
@@ -40,20 +40,23 @@ def githubData(page_data: requests.models.Response) -> list:
     return return_list
 
 def githubClean(table_data: str) -> list:
-    table_data = table_data.replace("</tr>", "")
-    table_data = table_data.replace("</tbody>", "")
-    table_data = table_data.replace("</table>", "")
-    table_data = table_data.replace("</td>", "")
-    table_data = table_data.replace("\n", "")
-    table_data = table_data.split("<tr>")
+    pattern = re.compile(r"</(tr|tbody|table|td)>")
     
-    return table_data
+    clean_data = pattern.sub("", table_data)
+    
+    table_data_clean = [row.strip() for row in clean_data.split("<tr>") if row]
+    
+    return table_data_clean
 
 def locationClean(location_data: str) -> list:
-    location_split = location_data.replace("<details><summary><strong>", "")
-    location_split = location_split.replace("</details>", " ")
-    location_split = location_split.replace("</strong></summary>", "/")
-    location_split = location_split.replace("<br/>", "/")
-    location_split = location_split.split("/")
-    
+    tags_to_remove = re.compile(r"<details><summary><strong>|</strong></summary>|</details>")
+    tags_to_replace_with_slash = re.compile(r"<br/>")
+
+    clean_data = tags_to_remove.sub("", location_data)
+    clean_data = tags_to_replace_with_slash.sub("/", clean_data)
+
+    location_split = list(filter(None, clean_data.split('/')))
+
+    location_split = [element.strip() for element in location_split]
+
     return location_split
