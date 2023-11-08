@@ -1,5 +1,6 @@
-import discord, json, requests, asyncio, scrapers, time
+import discord, json, requests, asyncio, scrapers, time, pytz
 from discord import app_commands
+from datetime import datetime
 
 with open('vars/config.json', 'r') as f:
     data = json.load(f)
@@ -8,6 +9,7 @@ with open('vars/links.json', 'r') as f2:
     
 TOKEN = data['TOKEN']
 TEST_SERVER = data['SERVER']
+pst_timezone = pytz.timezone('America/Los_Angeles')
 
 class pre_bot(discord.Client):
     def __init__(self):
@@ -46,16 +48,17 @@ async def self(interaction: discord.Interaction, style: discord.app_commands.Cho
                 time.sleep(0.25)
                 await interaction.channel.send(embed=embed)
         elif style.value == 1:
-            #TODO: Make description be more detailed
-            embed = discord.Embed(title=f'Daily Internships', description=f"Tech internships for the day", color=discord.Colour.green())
+            current_time_pst = datetime.utcnow().replace(tzinfo=pytz.utc).astimezone(pst_timezone)
+            formatted_date = current_time_pst.strftime('%m/%d/%y')
+            
+            embed = discord.Embed(title=f'Daily Internships', description=f"{formatted_date}", color=discord.Colour.green())
             for listing in response:
                 embed.add_field(name=f"{listing[0]}", value=f"{listing[2]}", inline=False)
             
             #TODO: Implement pagination for embed
             await interaction.channel.send(embed=embed)
-            
                 
-        await interaction.followup.send("Finished sending")
+        await interaction.followup.send("Finished.")
     except:
         embed = discord.Embed(title="Please try again.", color=discord.Colour.red())
         await interaction.response.send_message(embed=embed, ephemeral=True)
