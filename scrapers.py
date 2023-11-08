@@ -1,12 +1,14 @@
 from bs4 import BeautifulSoup
 from datetime import datetime
-import requests
+import requests, pytz
+
+pst = pytz.timezone('America/Los_Angeles')
 
 def githubData(page_data: requests.models.Response) -> list:
     return_list = []
     
-    now = datetime.now()
-    current_date = now.strftime("%b") + " " + now.strftime("%d")
+    now = datetime.utcnow().replace(tzinfo=pytz.utc).astimezone(pst)
+    current_date = now.strftime("%b %d")
     
     result = BeautifulSoup(page_data.text, 'lxml')
     table_data = str(result.find("table"))
