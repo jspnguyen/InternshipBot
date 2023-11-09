@@ -1,11 +1,14 @@
 import discord, json, requests, asyncio, scrapers, time, pytz
 from discord import app_commands
-from datetime import datetime
+from datetime import datetime, timedelta
+from discord.ext import tasks
 
 with open('vars/config.json', 'r') as f:
     data = json.load(f)
 with open('vars/links.json', 'r') as f2:
     links = json.load(f2)
+with open('storage/channels.json', 'r') as f3:
+    channels = json.load(f3)
     
 TOKEN = data['TOKEN']
 TEST_SERVER = data['SERVER']
@@ -63,9 +66,17 @@ async def self(interaction: discord.Interaction, style: discord.app_commands.Cho
         embed = discord.Embed(title="Please try again.", color=discord.Colour.red())
         await interaction.response.send_message(embed=embed, ephemeral=True)
         
-# @tree.command(name="subscribe", description="Subscribe a channel to get daily internship postings") 
-# async def self(interaction: discord.Interaction, channel_id: int):
-#     return
+@tree.command(name="subscribe", description="Subscribe a channel to get daily internship postings") 
+async def self(interaction: discord.Interaction):
+    channel_id = interaction.channel_id
+    server_id = interaction.guild_id
+    
+    channels[server_id] = channel_id
+    with open("storage/channels.json", "w") as outfile:
+        json.dump(channels, outfile)
+    
+    embed = discord.Embed(title="Subscribed!", color=discord.Colour.dark_green())
+    await interaction.response.send_message(embed=embed, ephemeral=True)
 
 # @tree.command(name="searchweekly", description="Search for new internship postings in the past week") 
 # async def self(interaction: discord.Interaction):
@@ -82,5 +93,22 @@ async def self(interaction: discord.Interaction):
     embed.add_field(name=f"/invite", value=f"Sends invite link for the bot")
     await interaction.response.send_message(embed=embed, ephemeral=True)
 
+@tasks.loop(hours=24)
+async def daily_update():
+    for channel_id in channels.values():
+        channel = bot.get_channel(channel_id) 
+        if channel:  
+            await channel.send("Test")
+
+@daily_update.before_loop
+async def before_daily_message():
+    hour = 8  
+    now = datetime.utcnow()
+    future = datetime(now.year, now.month, now.day, hour, 0)
+    if now.hour >= hour:  
+        future += timedelta(days=1)
+    await discord.utils.sleep_until(future)
+
 if __name__ == '__main__':
     bot.run(TOKEN)
+    daily_update.start()
