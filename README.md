@@ -11,11 +11,11 @@ https://github.com/SimplifyJobs/Summer2024-Internships
 
 1. Clone the repository to your local machine:
 ```terminal
-git clone https://github.com/jspnguyen/SceneSearcherBot.git
+git clone https://github.com/jspnguyen/InternshipBot.git
 ```
 2. Change directory to the local clone of the repository:
 ```terminal
-cd SceneSearcherBot
+cd InternshipBot
 ```
 3. Install the necessary Python packages:
 ```terminal
