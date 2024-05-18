@@ -25,4 +25,5 @@ pip install -r requirements.txt
 5. Enable privileged intents.
 6. Copy bot token and put it in config.json.
 
-*By jspnguyen*
+## Tech Stack:
+TBD
